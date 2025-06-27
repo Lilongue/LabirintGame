@@ -1,0 +1,26 @@
+# Исключение кэша Python
+__pycache__
+
+# Исключение файлов отладки PyCharm
+*.log
+.idea/
+
+# Исключение файлов отладки VSCode
+.vscode/
+
+# Исключение файлов отладки Atom
+.cache/
+
+# Исключение файлов отладки Sublime Text
+.cache/
+build/
+
+# Исключение файлов отладки IntelliJ IDEA
+.idea/
+
+# Исключение файлов отладки Eclipse
+.settings/
+.classpath
+
+# Исключение файлов отладки Android Studio
+.build/
