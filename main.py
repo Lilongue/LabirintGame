@@ -142,13 +142,19 @@ class MazeGame:
     def execute_code(self):
         """Выполнение пользовательского кода"""
         code = self.ui.get_code_text()
-        try:
-            exec(code, {"player": self.player})
-            self.ui.set_output_text("Код выполнен успешно!")
-        except Exception as e:
-            self.ui.set_output_text(f"Ошибка: {str(e)}")
-        finally:
-            self.game_state = GameState.PLAYING
+    
+        # Используем интерпретатор команд вместо прямого exec
+        success, message = self.command_interpreter.execute_code(code)
+    
+        if success:
+            self.ui.set_output_text(message)
+            # Проверяем, достиг ли игрок финиша
+        if self.player.is_at_finish(self.maze.finish_pos):
+            self.game_state = GameState.GAME_OVER
+        else:
+            self.ui.set_output_text(message)
+    
+        self.game_state = GameState.PLAYING
 
     def reset_game(self):
         """Сброс игры"""

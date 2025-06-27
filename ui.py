@@ -21,6 +21,8 @@ class UI:
         # Состояние UI
         self.code_text = ""
         self.output_text = "Добро пожаловать в игру!\nВведите команды для движения игрока."
+
+        self.cursor_pos = 0  # Позиция курсора в тексте
     
     def draw_maze(self, maze, player):
         """Отрисовка лабиринта и игрока"""
@@ -103,10 +105,22 @@ class UI:
         
         # Курсор при редактировании
         if editing_code:
-            cursor_x = CODE_PANEL_X + 15 + len(self.code_text.split('\n')[-1]) * 8
-            cursor_y = 75 + (len(self.code_text.split('\n')) - 1) * 20
-            pygame.draw.line(self.screen, Colors.BLACK, 
-                           (cursor_x, cursor_y), (cursor_x, cursor_y + 18), 2)
+            # Находим текущую строку и позицию в строке
+            text_before_cursor = self.code_text[:self.cursor_pos]
+            lines_before = text_before_cursor.split('\n')
+            current_line = len(lines_before) - 1
+            pos_in_line = len(lines_before[-1])
+    
+            # Используем реальную ширину текста
+            line_text = lines_before[-1]
+            text_width = self.font_small.size(line_text)[0] if line_text else 0
+    
+            cursor_x = CODE_PANEL_X + 15 + text_width
+            cursor_y = 75 + current_line * 20
+    
+            #  Убедимся что курсор видим (в пределах области)
+            if current_line >= 0 and current_line < 8:  # В видимой области
+                pygame.draw.line(self.screen, Colors.BLACK, (cursor_x, cursor_y), (cursor_x, cursor_y + 18), 2)
         
         # Область вывода
         output_rect = pygame.Rect(CODE_PANEL_X + 10, 290, CODE_PANEL_WIDTH - 20, 200)
@@ -205,6 +219,8 @@ class UI:
     def set_code_text(self, text):
         """Установить текст кода"""
         self.code_text = text
+        self.cursor_pos = len(text)  # Курсор в конец строки
+
     
     def get_code_text(self):
         """Получить текст кода"""
@@ -216,9 +232,11 @@ class UI:
     
     def add_character(self, char):
         """Добавить символ к коду"""
-        self.code_text += char
+        self.code_text = self.code_text[:self.cursor_pos] + char + self.code_text[self.cursor_pos:]
+        self.cursor_pos += 1
     
     def remove_character(self):
         """Удалить последний символ из кода"""
-        if self.code_text:
-            self.code_text = self.code_text[:-1]
+        if self.cursor_pos > 0:
+            self.code_text = self.code_text[:self.cursor_pos-1] + self.code_text[self.cursor_pos:]
+            self.cursor_pos -= 1
